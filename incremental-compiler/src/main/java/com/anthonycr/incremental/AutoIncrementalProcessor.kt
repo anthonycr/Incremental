@@ -32,13 +32,11 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .getElementsAnnotatedWith(AutoAggregating::class.java)
                     .filterIsInstance<TypeElement>()
                     .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it.qualifiedName.toString()) }
-                    .toSet()
 
             val processedIsolatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoIsolating::class.java)
                     .filterIsInstance<TypeElement>()
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it.qualifiedName.toString()) }
-                    .toSet()
 
             processedElements = processedElements
                     .union(processedAggregatingElements)
