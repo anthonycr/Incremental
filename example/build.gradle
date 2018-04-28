@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     implementation project(':incremental')
-    implementation project(':incremental-compiler')
+    kapt project(':incremental-compiler')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // annotation processing
