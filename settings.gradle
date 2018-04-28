@@ -1,0 +1,1 @@
+include ':auto-incremental', ':auto-incremental-compiler', ':example'
