@@ -33,14 +33,4 @@ class GradleResourcesSource(private val filer: Filer) {
 
 }
 
-
 const val RESOURCE_FILE_PATH = "META-INF/gradle/incremental.annotation.processors"
-
-val name = """
-
-        AutoIncremental
-        IsolatingAggregating
-        AutoGradle
-        Incremental
-
-        """
