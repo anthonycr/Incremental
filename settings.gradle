@@ -1,1 +1,1 @@
-include ':auto-incremental', ':auto-incremental-compiler', ':example'
+include ':incremental', ':incremental-compiler', ':example'
