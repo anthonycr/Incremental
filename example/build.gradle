@@ -13,5 +13,11 @@ dependencies {
     kapt "com.google.auto.service:auto-service:$autoServiceVersion"
 }
 
+kapt {
+    arguments {
+        arg("incremental.debug", true)
+    }
+}
+
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"

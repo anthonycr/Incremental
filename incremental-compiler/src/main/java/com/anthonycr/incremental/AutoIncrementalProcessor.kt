@@ -7,7 +7,6 @@ import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.tools.Diagnostic
 import javax.tools.StandardLocation
 
 /**
@@ -27,16 +26,21 @@ class AutoIncrementalProcessor : AbstractProcessor() {
     private var processedElements: Set<GradleResourcesEntry> = setOf()
 
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+        val debug = processingEnv.options[OPTIONS_DEBUG]?.toBoolean() ?: false
+        val logger = Logger(processingEnv.messager, debug)
+
         if (!roundEnv.processingOver()) {
             val processedAggregatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoAggregating::class.java)
                     .filterIsInstance<TypeElement>()
                     .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it.qualifiedName.toString()) }
+                    .onEach { logger.info("Resource entry: $it") }
 
             val processedIsolatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoIsolating::class.java)
                     .filterIsInstance<TypeElement>()
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it.qualifiedName.toString()) }
+                    .onEach { logger.info("Resource entry: $it") }
 
             processedElements = processedElements
                     .union(processedAggregatingElements)
@@ -46,13 +50,8 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .resourceFileAsList()
                     .union(processedElements)
                     .map { it.stringValue }
-                    .also {
-                        it.forEach {
-                            processingEnv.messager.printMessage(Diagnostic.Kind.NOTE, "Element: $it")
-                        }
-                    }
 
-            processingEnv.messager.printMessage(Diagnostic.Kind.NOTE, "Writing to resources")
+            logger.info("Writing to resources")
 
             processingEnv.filer.createResource(StandardLocation.CLASS_OUTPUT, "", RESOURCE_FILE_PATH)
                     .writeListToResource(combinedList)
@@ -63,4 +62,4 @@ class AutoIncrementalProcessor : AbstractProcessor() {
 
 }
 
-private const val OPTIONS_DEBUG = "auto.incremental.debug"
+private const val OPTIONS_DEBUG = "incremental.debug"
