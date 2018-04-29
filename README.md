@@ -52,6 +52,18 @@ Incremental will then generate the following resource entry.
 com.example.AggregatingProcessor,aggregating
 ```
 
+## Debugging
+
+Turn on debug logging by enabling a compiler option in the gradle build file.
+
+```gradle
+kapt {
+    arguments {
+        arg("incremental.debug", true)
+    }
+}
+```
+
 ## License
 ```
 Copyright 2018 Anthony Restaino
