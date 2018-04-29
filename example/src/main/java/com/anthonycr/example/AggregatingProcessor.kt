@@ -7,6 +7,9 @@ import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
+/**
+ * Aggregating annotation processors should be annotated with [AutoAggregating].
+ */
 @AutoAggregating
 @AutoService(Processor::class)
 class AggregatingProcessor : AbstractProcessor() {

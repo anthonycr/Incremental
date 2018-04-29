@@ -8,7 +8,7 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
 /**
- * Created by anthonycr on 4/26/18.
+ * Isolating annotation processors should be annotated with [AutoIsolating].
  */
 @AutoIsolating
 @AutoService(Processor::class)
