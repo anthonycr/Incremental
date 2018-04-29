@@ -2,22 +2,24 @@ package com.anthonycr.incremental
 
 import com.google.common.base.Charsets
 import com.google.common.io.CharStreams
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 import javax.tools.FileObject
 
 /**
- * Created by anthonycr on 4/27/18.
+ * Read a [FileObject] line by line into a [List] of [String].
  */
+fun FileObject.readFileAsStrings(): List<String> = try {
+    BufferedReader(InputStreamReader(openInputStream(), Charsets.UTF_8)).use {
+         CharStreams.readLines(it)
+    }
+} catch (exception: IOException) {
+    emptyList()
+}
 
 
-fun FileObject.readFileAsStrings(): List<String> =
-        BufferedReader(InputStreamReader(openInputStream(), Charsets.UTF_8)).use {
-            return CharStreams.readLines(it)
-        }
-
+/**
+ * Write a [List] of [String] line by line into a [FileObject].
+ */
 fun FileObject.writeListToResource(list: List<String>) {
     BufferedWriter(OutputStreamWriter(openOutputStream(), Charsets.UTF_8)).use { writer ->
         list.forEach {

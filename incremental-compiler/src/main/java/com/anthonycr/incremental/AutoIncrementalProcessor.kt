@@ -11,7 +11,8 @@ import javax.lang.model.element.TypeElement
 import javax.tools.StandardLocation
 
 /**
- * Created by anthonycr on 4/26/18.
+ * The annotation processor that writes processors annotated with [AutoIsolating] and
+ * [AutoAggregating] to resources.
  */
 @AutoService(Processor::class)
 @SupportedOptions(OPTIONS_DEBUG)

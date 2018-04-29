@@ -1,7 +1,9 @@
 package com.anthonycr.incremental
 
 /**
- * Created by anthonycr on 4/27/18.
+ * Representation of the different types of incremental annotation processors.
+ *
+ * @param value the [String] value that should be written to resources.
  */
 enum class IncrementalType(val value: String) {
     AGGREGATING("aggregating"),
