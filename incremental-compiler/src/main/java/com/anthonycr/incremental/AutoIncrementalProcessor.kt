@@ -6,6 +6,7 @@ import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.tools.StandardLocation
 
@@ -32,15 +33,19 @@ class AutoIncrementalProcessor : AbstractProcessor() {
         if (!roundEnv.processingOver()) {
             val processedAggregatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoAggregating::class.java)
-                    .filterIsInstance<TypeElement>()
+                    .filterIsInstanceOr<Element, TypeElement> {
+                        logger.error(it, "Annotation is only applicable to classes.")
+                    }
                     .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it.qualifiedName.toString()) }
-                    .onEach { logger.info("Resource entry: $it") }
+                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
 
             val processedIsolatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoIsolating::class.java)
-                    .filterIsInstance<TypeElement>()
+                    .filterIsInstanceOr<Element, TypeElement> {
+                        logger.error(it, "Annotation is only applicable to classes.")
+                    }
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it.qualifiedName.toString()) }
-                    .onEach { logger.info("Resource entry: $it") }
+                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
 
             processedElements = processedElements
                     .union(processedAggregatingElements)
