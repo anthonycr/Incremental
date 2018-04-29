@@ -8,7 +8,6 @@ import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
-import javax.tools.StandardLocation
 
 /**
  * The annotation processor that writes processors annotated with [AutoIsolating] and
@@ -18,6 +17,8 @@ import javax.tools.StandardLocation
 @SupportedOptions(OPTIONS_DEBUG)
 class AutoIncrementalProcessor : AbstractProcessor() {
 
+    private var processedElements: Set<GradleResourcesEntry> = setOf()
+
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun getSupportedAnnotationTypes(): Set<String> = setOf(
@@ -25,10 +26,8 @@ class AutoIncrementalProcessor : AbstractProcessor() {
             AutoAggregating::class.java.name
     )
 
-    private var processedElements: Set<GradleResourcesEntry> = setOf()
-
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        val debug = processingEnv.options[OPTIONS_DEBUG]?.toBoolean() ?: false
+        val debug = processingEnv.option(OPTIONS_DEBUG, false)
         val logger = Logger(processingEnv.messager, debug)
 
         if (!roundEnv.processingOver()) {
@@ -52,14 +51,17 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .union(processedAggregatingElements)
                     .union(processedIsolatingElements)
         } else {
-            val combinedList = GradleResourcesSource(processingEnv.filer)
-                    .resourceFileAsList()
+            val combinedList = processingEnv
+                    .getIncrementalGradleResource()
+                    .readFileAsStrings()
+                    .asGradleResourceEntries()
                     .union(processedElements)
                     .map { it.stringValue }
 
             logger.info("Writing to resources")
 
-            processingEnv.filer.createResource(StandardLocation.CLASS_OUTPUT, "", RESOURCE_FILE_PATH)
+            processingEnv
+                    .createIncrementalGradleResource()
                     .writeListToResource(combinedList)
         }
 

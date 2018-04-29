@@ -34,3 +34,20 @@ sealed class GradleResourcesEntry(open val stringValue: String) {
     data class Other(override val stringValue: String) : GradleResourcesEntry(stringValue)
 
 }
+
+/**
+ * Parse a [List] of [String] into a [List] of [GradleResourcesEntry].
+ */
+fun List<String>.asGradleResourceEntries() = map { line ->
+    val splitLine = line.split(',')
+    when {
+        splitLine.size != 2 ->
+            GradleResourcesEntry.Other(line)
+        splitLine[1] == IncrementalType.ISOLATING.value ->
+            GradleResourcesEntry.IncrementalProcessor.Isolating(splitLine[0])
+        splitLine[1] == IncrementalType.AGGREGATING.value ->
+            GradleResourcesEntry.IncrementalProcessor.Isolating(splitLine[0])
+        else ->
+            GradleResourcesEntry.Other(line)
+    }
+}
