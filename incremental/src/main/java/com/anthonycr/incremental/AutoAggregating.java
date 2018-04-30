@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Represents an aggregating processor.
- * <p>
- * Created by anthonycr on 4/26/18.
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE})
