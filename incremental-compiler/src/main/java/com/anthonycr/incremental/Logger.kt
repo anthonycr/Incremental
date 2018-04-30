@@ -6,8 +6,6 @@ import javax.tools.Diagnostic
 
 /**
  * A logger that communicates to the compiler.
- *
- * Created by anthonycr on 4/28/18.
  */
 class Logger(private val messager: Messager, private val debug: Boolean) {
 
