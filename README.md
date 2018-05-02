@@ -11,7 +11,7 @@ Annotation processors should include both the annotations and the compiler
 
 ```groovy
 implementation project(':incremental')
-implementation project(':incremental-compiler')
+annotationProcessor project(':incremental-compiler')
 ```
 
 Isolating processors should use the `@AutoIsolating` annotation.
@@ -21,7 +21,7 @@ package com.example
 
 @AutoIsolating
 class IsolatingProcessor : AbstractProcessor() {
-    override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         ...
     }
 }
@@ -40,7 +40,7 @@ package com.example
 
 @AutoAggregating
 class AggregatingProcessor : AbstractProcessor() {
-    override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         ...
     }
 }
