@@ -23,3 +23,18 @@ inline fun <T, reified R> Iterable<T>.filterIsInstanceOr(onNotInstance: (T) -> U
     }
     return destination
 }
+
+/**
+ * Filters out [T] instances that do not match the provided [predicate] and provides any elements
+ * that do not pass the filter to [orElse].
+ */
+inline fun <T> Collection<T>.filterElse(
+        predicate: (T) -> Boolean,
+        orElse: (T) -> Unit
+): List<T> = filter { element ->
+    predicate(element).also {
+        if (!it) {
+            orElse(element)
+        }
+    }
+}

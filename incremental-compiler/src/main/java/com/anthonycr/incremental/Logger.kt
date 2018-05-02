@@ -19,6 +19,13 @@ class Logger(private val messager: Messager, private val debug: Boolean) {
     }
 
     /**
+     * Report a warning level [message] on the specified [element].
+     */
+    fun warning(element: Element, message: String) {
+        messager.printMessage(Diagnostic.Kind.WARNING, message, element)
+    }
+
+    /**
      * Report an error level [message] on the specified [element].
      */
     fun error(element: Element, message: String) {

@@ -1,8 +1,11 @@
 package com.anthonycr.incremental
 
 import javax.annotation.processing.ProcessingEnvironment
+import javax.lang.model.element.Element
+import javax.lang.model.type.TypeMirror
 import javax.tools.FileObject
 import javax.tools.StandardLocation
+import kotlin.reflect.KClass
 
 /**
  * Returns the environment [Boolean] option with the provided [name] or the [default] if the
@@ -10,6 +13,23 @@ import javax.tools.StandardLocation
  */
 fun ProcessingEnvironment.option(name: String, default: Boolean): Boolean {
     return options[name]?.toBoolean() ?: default
+}
+
+/**
+ * Returns the [TypeMirror] that represents the provided [KClass].
+ */
+fun ProcessingEnvironment.classToTypeMirror(clazz: KClass<*>): TypeMirror {
+    return elementUtils.getTypeElement(clazz.java.name).asType()
+}
+
+/**
+ * Returns true if the [Element] implements the [interfaceType], false otherwise.
+ */
+fun ProcessingEnvironment.implementsInterface(
+        element: Element,
+        interfaceType: TypeMirror
+): Boolean {
+    return typeUtils.isAssignable(element.asType(), interfaceType)
 }
 
 /**

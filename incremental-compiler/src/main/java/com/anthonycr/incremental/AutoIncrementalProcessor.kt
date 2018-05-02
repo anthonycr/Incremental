@@ -7,6 +7,7 @@ import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 
 /**
@@ -30,13 +31,22 @@ class AutoIncrementalProcessor : AbstractProcessor() {
         val debug = processingEnv.option(OPTIONS_DEBUG, false)
         val logger = Logger(processingEnv.messager, debug)
 
+        val processorInterface = processingEnv.classToTypeMirror(Processor::class)
+
         if (!roundEnv.processingOver()) {
             val processedAggregatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoAggregating::class.java)
                     .filterIsInstanceOr<Element, TypeElement> {
                         logger.error(it, "Annotation is only applicable to classes.")
                     }
-                    .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it.qualifiedName.toString()) }
+                    .filterElse({ it.kind == ElementKind.CLASS }) {
+                        logger.error(it, "Annotation is only applicable to classes.")
+                    }
+                    .filterElse({ processingEnv.implementsInterface(it, processorInterface) }) {
+                        logger.warning(it, "Annotation should only be used on processors.")
+                    }
+                    .map { it.qualifiedName.toString() }
+                    .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it) }
                     .onEach { logger.info("Resource entry: ${it.stringValue}") }
 
             val processedIsolatingElements = roundEnv
@@ -44,7 +54,14 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .filterIsInstanceOr<Element, TypeElement> {
                         logger.error(it, "Annotation is only applicable to classes.")
                     }
-                    .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it.qualifiedName.toString()) }
+                    .filterElse({ it.kind == ElementKind.CLASS }) {
+                        logger.error(it, "Annotation is only applicable to classes.")
+                    }
+                    .filterElse({ processingEnv.implementsInterface(it, processorInterface) }) {
+                        logger.warning(it, "Annotation should only be used on processors.")
+                    }
+                    .map { it.qualifiedName.toString() }
+                    .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it) }
                     .onEach { logger.info("Resource entry: ${it.stringValue}") }
 
             processedElements = processedElements
