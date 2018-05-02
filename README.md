@@ -11,7 +11,7 @@ Annotation processors should include both the annotations and the compiler
 
 ```groovy
 implementation project(':incremental')
-implementation project(':incremental-compiler')
+annotationProcessor project(':incremental-compiler')
 ```
 
 Isolating processors should use the `@AutoIsolating` annotation.
