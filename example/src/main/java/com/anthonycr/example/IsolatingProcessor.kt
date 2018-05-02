@@ -13,7 +13,7 @@ import javax.lang.model.element.TypeElement
 @AutoIsolating
 @AutoService(Processor::class)
 class IsolatingProcessor : AbstractProcessor() {
-    override fun process(p0: MutableSet<out TypeElement>?, p1: RoundEnvironment?): Boolean {
+    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         TODO("not implemented")
     }
 }
