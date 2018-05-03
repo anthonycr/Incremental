@@ -28,7 +28,7 @@ class AutoIncrementalProcessor : AbstractProcessor() {
             AutoAggregating::class.java.name
     )
 
-    override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         val debug = processingEnv.option(OPTIONS_DEBUG, false)
         val logger = Logger(processingEnv.messager, debug)
 
