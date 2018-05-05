@@ -79,7 +79,7 @@ class AutoIncrementalProcessor : AbstractProcessor() {
             logger: Logger,
             processorInterface: TypeMirror
     ): List<TypeElement> {
-        return filterIsInstanceOr<Element, TypeElement> {
+        return filterIsInstanceElse<Element, TypeElement> {
             logger.error(it, "Annotation is only applicable to classes.")
         }.filterElse({ it.kind == ElementKind.CLASS }) {
             logger.error(it, "Annotation is only applicable to classes.")

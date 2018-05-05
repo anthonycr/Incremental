@@ -10,15 +10,15 @@ inline fun <T> Collection<T>.onEach(block: (T) -> Unit): Collection<T> {
 
 /**
  * Filter a [Collection] of type [T] to type [R] and if an item is not of type [R] then execute the
- * [onNotInstance] block.
+ * [orElse] block.
  */
-inline fun <T, reified R> Iterable<T>.filterIsInstanceOr(onNotInstance: (T) -> Unit): List<R> {
+inline fun <T, reified R> Iterable<T>.filterIsInstanceElse(orElse: (T) -> Unit): List<R> {
     val destination = ArrayList<R>()
     for (element in this) {
         if (element is R) {
             destination.add(element)
         } else {
-            onNotInstance(element)
+            orElse(element)
         }
     }
     return destination
