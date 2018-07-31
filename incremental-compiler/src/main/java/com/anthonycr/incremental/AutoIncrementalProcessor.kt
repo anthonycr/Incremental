@@ -12,8 +12,8 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeMirror
 
 /**
- * The annotation processor that writes processors annotated with [AutoIsolating] and
- * [AutoAggregating] to resources.
+ * The annotation processor that writes processors annotated with [AutoIsolating],
+ * [AutoAggregating], and [AutoDynamic] to resources.
  */
 @AutoService(Processor::class)
 @SupportedOptions(OPTIONS_DEBUG)
@@ -49,9 +49,17 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it) }
                     .onEach { logger.info("Resource entry: ${it.stringValue}") }
 
+            val processedDynamicElements = roundEnv
+                    .getElementsAnnotatedWith(AutoDynamic::class.java)
+                    .validateAnnotatedElements(logger, processorInterface)
+                    .map { it.qualifiedName.toString() }
+                    .map { GradleResourcesEntry.IncrementalProcessor.Dynamic(it) }
+                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
+
             processedElements = processedElements
                     .union(processedAggregatingElements)
                     .union(processedIsolatingElements)
+                    .union(processedDynamicElements)
         } else {
             val combinedList = processingEnv
                     .getIncrementalGradleResource()

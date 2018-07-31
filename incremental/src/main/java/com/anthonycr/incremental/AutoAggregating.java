@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Represents an aggregating processor.
+ * Represents an aggregating incremental processor.
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE})

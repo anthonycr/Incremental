@@ -21,11 +21,18 @@ sealed class GradleResourcesEntry(open val stringValue: String) {
         ) : IncrementalProcessor(processorName, IncrementalType.ISOLATING)
 
         /**
-         * Representation of an isolating aggregating annotation processor entry.
+         * Representation of an aggregating incremental annotation processor entry.
          */
         data class Aggregating(
                 private val processorName: String
         ) : IncrementalProcessor(processorName, IncrementalType.AGGREGATING)
+
+        /**
+         * Representation of a dynamic incremental annotation processor entry.
+         */
+        data class Dynamic(
+                private val processorName: String
+        ) : IncrementalProcessor(processorName, IncrementalType.DYNAMIC)
     }
 
     /**
@@ -47,6 +54,8 @@ fun List<String>.asGradleResourceEntries() = map { line ->
             GradleResourcesEntry.IncrementalProcessor.Isolating(splitLine[0])
         splitLine[1] == IncrementalType.AGGREGATING.value ->
             GradleResourcesEntry.IncrementalProcessor.Isolating(splitLine[0])
+        splitLine[1] == IncrementalType.DYNAMIC.value ->
+            GradleResourcesEntry.IncrementalProcessor.Dynamic(splitLine[0])
         else ->
             GradleResourcesEntry.Other(line)
     }

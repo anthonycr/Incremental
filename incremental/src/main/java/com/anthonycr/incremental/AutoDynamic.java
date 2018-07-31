@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Represents an isolating incremental processor.
+ * Represents a dynamic aggregating or isolating incremental processor.
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE})
-public @interface AutoIsolating {}
+public @interface AutoDynamic {}

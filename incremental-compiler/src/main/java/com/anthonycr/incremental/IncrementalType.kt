@@ -7,5 +7,6 @@ package com.anthonycr.incremental
  */
 enum class IncrementalType(val value: String) {
     AGGREGATING("aggregating"),
-    ISOLATING("isolating")
+    ISOLATING("isolating"),
+    DYNAMIC("dynamic")
 }
