@@ -38,23 +38,23 @@ class AutoIncrementalProcessor : AbstractProcessor() {
             val processedAggregatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoAggregating::class.java)
                     .validateAnnotatedElements(logger, processorInterface)
-                    .map { it.qualifiedName.toString() }
+                    .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it) }
-                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
+                    .onEach { logger.info("Aggregating resource entry: ${it.stringValue}") }
 
             val processedIsolatingElements = roundEnv
                     .getElementsAnnotatedWith(AutoIsolating::class.java)
                     .validateAnnotatedElements(logger, processorInterface)
-                    .map { it.qualifiedName.toString() }
+                    .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it) }
-                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
+                    .onEach { logger.info("Isolating resource entry: ${it.stringValue}") }
 
             val processedDynamicElements = roundEnv
                     .getElementsAnnotatedWith(AutoDynamic::class.java)
                     .validateAnnotatedElements(logger, processorInterface)
-                    .map { it.qualifiedName.toString() }
+                    .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Dynamic(it) }
-                    .onEach { logger.info("Resource entry: ${it.stringValue}") }
+                    .onEach { logger.info("Dynamic resource entry: ${it.stringValue}") }
 
             processedElements = processedElements
                     .union(processedAggregatingElements)
@@ -94,6 +94,13 @@ class AutoIncrementalProcessor : AbstractProcessor() {
         }.filterElse({ processingEnv.implementsInterface(it, processorInterface) }) {
             logger.warning(it, "Annotation should only be used on processors.")
         }
+    }
+
+    /**
+     * Converts a [List] of [TypeElement] to a [List] of their qualified names as [String].
+     */
+    private fun List<TypeElement>.mapToQualifiedName(): List<String> {
+        return map { it.qualifiedName.toString() }
     }
 
 }
