@@ -59,6 +59,8 @@ com.example.AggregatingProcessor,aggregating
 Processors that determine if they are isolating or aggregating at runtime should use the `@AutoDynamic` annotation.
 
 ```kotlin
+package com.example
+
 @AutoDynamic
 class DynamicProcessor : AbstractProcessor() {
 
