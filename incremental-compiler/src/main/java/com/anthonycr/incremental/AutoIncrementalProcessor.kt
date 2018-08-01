@@ -25,7 +25,8 @@ class AutoIncrementalProcessor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): Set<String> = setOf(
             AutoIsolating::class.java.name,
-            AutoAggregating::class.java.name
+            AutoAggregating::class.java.name,
+            AutoDynamic::class.java.name
     )
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
