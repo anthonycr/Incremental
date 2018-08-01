@@ -21,9 +21,11 @@ package com.example
 
 @AutoIsolating
 class IsolatingProcessor : AbstractProcessor() {
+
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         ...
     }
+
 }
 ```
 
@@ -40,9 +42,11 @@ package com.example
 
 @AutoAggregating
 class AggregatingProcessor : AbstractProcessor() {
+
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         ...
     }
+
 }
 ```
 
@@ -50,6 +54,29 @@ Incremental will then generate the following resource entry.
 
 ```
 com.example.AggregatingProcessor,aggregating
+```
+
+Processors that determine if they are isolating or aggregating at runtime should use the `@AutoDynamic` annotation.
+
+```kotlin
+@AutoDynamic
+class DynamicProcessor : AbstractProcessor() {
+
+    override fun getSupportedOptions(): Set<String> = setOf(
+        "org.gradle.annotation.processing.aggregating" // "org.gradle.annotation.processing.isolating"
+    )
+
+    override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
+        ...
+    }
+
+}
+```
+
+Incremental will then generate the following resource entry.
+
+```
+com.example.DynamicProcessor,dynamic
 ```
 
 ## Debugging
