@@ -37,21 +37,21 @@ class AutoIncrementalProcessor : AbstractProcessor() {
 
         if (!roundEnv.processingOver()) {
             val processedAggregatingElements = roundEnv
-                    .getElementsAnnotatedWith(AutoAggregating::class.java)
+                    .elementsAnnotatedWith<AutoAggregating>()
                     .validateAnnotatedElements(logger, processorInterface)
                     .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Aggregating(it) }
                     .onEach { logger.info("Aggregating resource entry: ${it.stringValue}") }
 
             val processedIsolatingElements = roundEnv
-                    .getElementsAnnotatedWith(AutoIsolating::class.java)
+                    .elementsAnnotatedWith<AutoIsolating>()
                     .validateAnnotatedElements(logger, processorInterface)
                     .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Isolating(it) }
                     .onEach { logger.info("Isolating resource entry: ${it.stringValue}") }
 
             val processedDynamicElements = roundEnv
-                    .getElementsAnnotatedWith(AutoDynamic::class.java)
+                    .elementsAnnotatedWith<AutoDynamic>()
                     .validateAnnotatedElements(logger, processorInterface)
                     .mapToQualifiedName()
                     .map { GradleResourcesEntry.IncrementalProcessor.Dynamic(it) }
