@@ -67,7 +67,7 @@ class AutoIncrementalProcessor : AbstractProcessor() {
                     .readFileAsStrings()
                     .asGradleResourceEntries()
                     .union(processedElements)
-                    .map { it.stringValue }
+                    .map(GradleResourcesEntry::stringValue)
 
             logger.info("Writing to resources")
 
