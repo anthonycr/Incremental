@@ -1,6 +1,7 @@
 package com.anthonycr.incremental
 
 import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.Processor
 import javax.lang.model.element.Element
 import javax.lang.model.type.TypeMirror
 import javax.tools.FileObject
@@ -23,13 +24,10 @@ fun ProcessingEnvironment.classToTypeMirror(clazz: KClass<*>): TypeMirror {
 }
 
 /**
- * Returns true if the [Element] implements the [interfaceType], false otherwise.
+ * Returns true if the [Element] implements the [Processor] interface, false otherwise.
  */
-fun ProcessingEnvironment.implementsInterface(
-        element: Element,
-        interfaceType: TypeMirror
-): Boolean {
-    return typeUtils.isAssignable(element.asType(), interfaceType)
+fun ProcessingEnvironment.doesImplementProcessor(element: Element): Boolean {
+    return typeUtils.isAssignable(element.asType(), classToTypeMirror(Processor::class))
 }
 
 /**
