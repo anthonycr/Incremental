@@ -32,7 +32,7 @@ class AutoIncrementalProcessorTest {
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
-                .assertContents("test_case.AggregatingExample,aggregating")
+                .assertUnorderedLines("test_case.AggregatingExample,aggregating")
     }
 
     @Test
@@ -42,7 +42,7 @@ class AutoIncrementalProcessorTest {
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
-                .assertContents("test_case.IsolatingExample,isolating")
+                .assertUnorderedLines("test_case.IsolatingExample,isolating")
     }
 
     @Test
@@ -52,21 +52,25 @@ class AutoIncrementalProcessorTest {
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
-                .assertContents("test_case.DynamicExample,dynamic")
+                .assertUnorderedLines("test_case.DynamicExample,dynamic")
     }
 
     @Test
     fun validateMultipleAutoAnnotations() {
         compiler
-                .compile(fileManager.createJavaFileObjects(DynamicExample::class, AggregatingExample::class, IsolatingExample::class))
+                .compile(fileManager.createJavaFileObjects(
+                        DynamicExample::class,
+                        AggregatingExample::class,
+                        IsolatingExample::class
+                ))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
-                .assertContents("""
-                    test_case.AggregatingExample,aggregating
-                    test_case.IsolatingExample,isolating
-                    test_case.DynamicExample,dynamic
-                """.trimIndent())
+                .assertUnorderedLines(
+                        "test_case.DynamicExample,dynamic",
+                        "test_case.AggregatingExample,aggregating",
+                        "test_case.IsolatingExample,isolating"
+                )
     }
 
     /**
@@ -79,15 +83,20 @@ class AutoIncrementalProcessorTest {
 }
 
 /**
- * Asserts that the trimmed contents of a [JavaFileObject] are the parameter provided by
- * [content].
+ * Asserts that the trimmed contents of a [JavaFileObject] delimited by new line are equal to the
+ * [lines] provided. The ordering of the arguments provided does not matter, only that they are
+ * contained in the file.
  */
-private fun JavaFileObject.assertContents(content: String) {
-    assertThat(openInputStream().bufferedReader().use(BufferedReader::readText).trim()).isEqualTo(content)
+private fun JavaFileObject.assertUnorderedLines(vararg lines: String) {
+    val contents = openInputStream().bufferedReader().use(BufferedReader::readText).trim().lines().toMutableList()
+
+    lines.forEach { assertThat(contents.remove(it)).isTrue() }
+
+    assertThat(contents.isEmpty())
 }
 
 /**
- * Asserts that the list contains a single element
+ * Asserts that the list contains a single element.
  */
 private fun <T> List<T>.asSingleElement(): T {
     if (size != 1) {
