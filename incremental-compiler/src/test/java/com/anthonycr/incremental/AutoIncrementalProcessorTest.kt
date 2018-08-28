@@ -28,7 +28,7 @@ class AutoIncrementalProcessorTest {
     @Test
     fun validateAutoAggregating() {
         compiler
-                .compile(fileManager.createJavaFileObject(AggregatingExample::class))
+                .compile(fileManager.createJavaFileObjects(AggregatingExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
@@ -38,7 +38,7 @@ class AutoIncrementalProcessorTest {
     @Test
     fun validateAutoIsolating() {
         compiler
-                .compile(fileManager.createJavaFileObject(IsolatingExample::class))
+                .compile(fileManager.createJavaFileObjects(IsolatingExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
@@ -48,19 +48,33 @@ class AutoIncrementalProcessorTest {
     @Test
     fun validateAutoDynamic() {
         compiler
-                .compile(fileManager.createJavaFileObject(DynamicExample::class))
+                .compile(fileManager.createJavaFileObjects(DynamicExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
                 .asSingleElement()
                 .assertContents("test_case.DynamicExample,dynamic")
     }
 
+    @Test
+    fun validateMultipleAutoAnnotations() {
+        compiler
+                .compile(fileManager.createJavaFileObjects(DynamicExample::class, AggregatingExample::class, IsolatingExample::class))
+                .generatedFiles()
+                .findIncrementalResourcesFiles()
+                .asSingleElement()
+                .assertContents("""
+                    test_case.AggregatingExample,aggregating
+                    test_case.IsolatingExample,isolating
+                    test_case.DynamicExample,dynamic
+                """.trimIndent())
+    }
+
     /**
-     * Creates a [JavaFileObject] from the provided [KClass]. Returns the object in an [Iterable]
-     * for convenience.
+     * Creates a list of [JavaFileObject] from the provided [KClass] list. Returns the objects as an
+     * [Iterable] for convenience.
      */
-    private fun StandardJavaFileManager.createJavaFileObject(kClass: KClass<*>): Iterable<JavaFileObject> {
-        return getJavaFileObjects(kClass.asResourcePath().asClassPathFile(javaRoot))
+    private fun StandardJavaFileManager.createJavaFileObjects(vararg kClass: KClass<*>): Iterable<JavaFileObject> {
+        return getJavaFileObjects(*kClass.map { it.asResourcePath().asClassPathFile(javaRoot) }.toTypedArray())
     }
 }
 
