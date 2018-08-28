@@ -11,6 +11,14 @@ dependencies {
     kapt "com.google.auto.service:auto-service:$autoServiceVersion"
 
     implementation project(':incremental')
+
+    // test dependencies
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'com.google.testing.compile:compile-testing:0.15'
+    testImplementation "org.assertj:assertj-core:$assertJ"
+
+    // Used by both auto-service and compile-testing, we need to resolve the version for them.
+    implementation 'com.google.guava:guava:23.5-jre'
 }
 
 sourceCompatibility = "1.7"

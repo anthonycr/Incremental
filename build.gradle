@@ -1,5 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext {
+        kotlin_version = '1.2.61'
+        assertJ = '3.9.1'
+    }
     repositories {
         jcenter()
     }
