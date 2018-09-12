@@ -1,5 +1,6 @@
 package com.anthonycr.incremental
 
+import com.google.testing.compile.Compilation
 import com.google.testing.compile.Compiler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -19,7 +20,7 @@ import kotlin.reflect.KClass
  */
 class AutoIncrementalProcessorTest {
 
-    private val compiler = Compiler.javac().withProcessors(AutoIncrementalProcessor())
+    private val createCompiler = { Compiler.javac().withProcessors(AutoIncrementalProcessor()) }
     private val fileManager = ToolProvider.getSystemJavaCompiler().getStandardFileManager(DiagnosticCollector(), null, null)
     private val classpathRoot = File(Thread.currentThread().contextClassLoader.getResource("").path)
     private val projectRoot = classpathRoot.parentFile.parentFile.parentFile.parentFile
@@ -27,7 +28,7 @@ class AutoIncrementalProcessorTest {
 
     @Test
     fun validateAutoAggregating() {
-        compiler
+        createCompiler()
                 .compile(fileManager.createJavaFileObjects(AggregatingExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
@@ -37,7 +38,7 @@ class AutoIncrementalProcessorTest {
 
     @Test
     fun validateAutoIsolating() {
-        compiler
+        createCompiler()
                 .compile(fileManager.createJavaFileObjects(IsolatingExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
@@ -47,7 +48,7 @@ class AutoIncrementalProcessorTest {
 
     @Test
     fun validateAutoDynamic() {
-        compiler
+        createCompiler()
                 .compile(fileManager.createJavaFileObjects(DynamicExample::class))
                 .generatedFiles()
                 .findIncrementalResourcesFiles()
@@ -57,7 +58,7 @@ class AutoIncrementalProcessorTest {
 
     @Test
     fun validateMultipleAutoAnnotations() {
-        compiler
+        createCompiler()
                 .compile(fileManager.createJavaFileObjects(
                         DynamicExample::class,
                         AggregatingExample::class,
@@ -72,6 +73,26 @@ class AutoIncrementalProcessorTest {
                         "test_case.IsolatingExample,isolating"
                 )
     }
+
+    @Test
+    fun validateOutputDeterminism() {
+        val input = arrayOf(
+                DynamicExample::class,
+                AggregatingExample::class,
+                IsolatingExample::class
+        )
+
+        val compilationHash1 = createCompiler().compile(fileManager.createJavaFileObjects(*input)).hashOutput()
+        val compilationHash2 = createCompiler().compile(fileManager.createJavaFileObjects(*input)).hashOutput()
+
+        assertThat(compilationHash1).isEqualTo(compilationHash2)
+    }
+
+    /**
+     * Create a joint hash of the files output during compilation.
+     */
+    private fun Compilation.hashOutput() = generatedFiles()
+            .joinToString { it.getCharContent(false).hashCode().toString() }
 
     /**
      * Creates a list of [JavaFileObject] from the provided [KClass] list. Returns the objects as an
